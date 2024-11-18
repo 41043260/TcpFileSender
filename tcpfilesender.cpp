@@ -9,6 +9,8 @@ TcpFileSender::TcpFileSender(QWidget *parent)
     bytesToWrite = 0;
     clientProgressBar = new QProgressBar;
     clientStatusLabel = new QLabel(QStringLiteral("客戶端就緒"));
+    ipLineEdit = new QLineEdit("127.0.0.1");  // 預設本機
+    portLineEdit = new QLineEdit("16998");    // 預設埠
     startButton = new QPushButton(QStringLiteral("開始"));
     quitButton = new QPushButton(QStringLiteral("退出"));
     openButton = new QPushButton(QStringLiteral("開檔"));
@@ -17,22 +19,29 @@ TcpFileSender::TcpFileSender(QWidget *parent)
     buttonBox->addButton(startButton, QDialogButtonBox::ActionRole);
     buttonBox->addButton(openButton, QDialogButtonBox::ActionRole);
     buttonBox->addButton(quitButton, QDialogButtonBox::RejectRole);
-
+    QHBoxLayout *connectionLayout = new QHBoxLayout;
+    connectionLayout->addWidget(new QLabel(QStringLiteral("IP:")));
+    connectionLayout->addWidget(ipLineEdit);
+    connectionLayout->addWidget(new QLabel(QStringLiteral("PORT:")));
+    connectionLayout->addWidget(portLineEdit);
+    // 主佈局
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->addWidget(clientProgressBar);
     mainLayout->addWidget(clientStatusLabel);
+    mainLayout->addLayout(connectionLayout);  // 加入IP和埠佈局
     mainLayout->addStretch(1);
     mainLayout->addSpacing(10);
     mainLayout->addWidget(buttonBox);
     setLayout(mainLayout);
     setWindowTitle(QStringLiteral("檔案傳送"));
-    connect(openButton,SIGNAL(clicked()), this, SLOT(openFile()));
+    // 連線信號和槽
+    connect(openButton, SIGNAL(clicked()), this, SLOT(openFile()));
     connect(startButton, SIGNAL(clicked()), this, SLOT(start()));
     connect(&tcpClient, SIGNAL(connected()), this, SLOT(startTransfer()));
     connect(&tcpClient, SIGNAL(bytesWritten(qint64)), this, SLOT(updateClientProgress(qint64)));
     connect(quitButton, SIGNAL(clicked()), this, SLOT(close()));
-
 }
+
 void TcpFileSender::openFile()
 {
     fileName = QFileDialog::getOpenFileName(this);
@@ -43,7 +52,7 @@ void TcpFileSender::start()
     startButton->setEnabled(false);
     bytesWritten = 0;
     clientStatusLabel->setText(QStringLiteral("連接中..."));
-    tcpClient.connectToHost(QHostAddress("127.0.0.1"), 16998);
+    tcpClient.connectToHost(QHostAddress(ipLineEdit->text()), portLineEdit->text().toInt());
 }
 void TcpFileSender::startTransfer()
 {
@@ -93,6 +102,5 @@ TcpFileSender::~TcpFileSender()
 {
 
 }
-
 
 
