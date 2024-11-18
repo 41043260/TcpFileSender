@@ -33,9 +33,14 @@ TcpFileSender::TcpFileSender(QWidget *parent)
     mainLayout->addSpacing(10);
     mainLayout->addWidget(buttonBox);
     setLayout(mainLayout);
+<<<<<<< HEAD
     setWindowTitle(QStringLiteral("檔案傳送"));
     // 連線信號和槽
     connect(openButton, SIGNAL(clicked()), this, SLOT(openFile()));
+=======
+    setWindowTitle(QStringLiteral("(版本控制Git管理)檔案傳送"));
+    connect(openButton,SIGNAL(clicked()), this, SLOT(openFile()));
+>>>>>>> 68e4ca54584c5061c4d36cdf72eb724942801436
     connect(startButton, SIGNAL(clicked()), this, SLOT(start()));
     connect(&tcpClient, SIGNAL(connected()), this, SLOT(startTransfer()));
     connect(&tcpClient, SIGNAL(bytesWritten(qint64)), this, SLOT(updateClientProgress(qint64)));
